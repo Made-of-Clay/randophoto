@@ -4,3 +4,8 @@
 /* purgecss end ignore */
 
 @tailwind utilities;
+
+
+a {
+    @apply text-blue-700;
+}

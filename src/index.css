@@ -6082,6 +6082,10 @@ video {
   max-height: 100vh;
 }
 
+.max-h-3\/4-screen {
+  max-height: 75vh;
+}
+
 .max-w-none {
   max-width: none;
 }
@@ -11893,6 +11897,10 @@ video {
   transition-delay: 1000ms;
 }
 
+a {
+  color: #2b6cb0;
+}
+
 @media (min-width: 640px) {
   .sm\:space-y-0 > :not(template) ~ :not(template) {
     --space-y-reverse: 0;
@@ -17364,6 +17372,10 @@ video {
 
   .sm\:max-h-screen {
     max-height: 100vh;
+  }
+
+  .sm\:max-h-3\/4-screen {
+    max-height: 75vh;
   }
 
   .sm\:max-w-none {
@@ -28651,6 +28663,10 @@ video {
     max-height: 100vh;
   }
 
+  .md\:max-h-3\/4-screen {
+    max-height: 75vh;
+  }
+
   .md\:max-w-none {
     max-width: none;
   }
@@ -39936,6 +39952,10 @@ video {
     max-height: 100vh;
   }
 
+  .lg\:max-h-3\/4-screen {
+    max-height: 75vh;
+  }
+
   .lg\:max-w-none {
     max-width: none;
   }
@@ -51219,6 +51239,10 @@ video {
 
   .xl\:max-h-screen {
     max-height: 100vh;
+  }
+
+  .xl\:max-h-3\/4-screen {
+    max-height: 75vh;
   }
 
   .xl\:max-w-none {
