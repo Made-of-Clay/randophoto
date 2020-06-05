@@ -1,5 +1,6 @@
 const initState = {
   photos: [],
+  focusedPhoto: null,
 };
 
 const rootReducer = (state = initState, action) => {
@@ -9,6 +10,11 @@ const rootReducer = (state = initState, action) => {
         ...state,
         photos: action.photos,
       };
+      case 'FOCUS_PHOTO':
+        return {
+          ...state,
+          focusedPhoto: action.photoID,
+        };
     default:
       return state;
   }

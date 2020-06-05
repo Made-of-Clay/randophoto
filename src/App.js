@@ -1,7 +1,6 @@
 import React from 'react';
-// import logo from './logo.svg';
-// import './App.css';
 import PhotoThumbnails from './PhotoThumbnails';
+import PhotoViewer from './PhotoViewer';
 
 function App() {
     return (
@@ -14,7 +13,7 @@ function App() {
             </header>
 
             <div className="flex flex-wrap mt-4">
-                <div className="bg-gray-400 p-3 w-full sm:w-1/2 mx-auto">Photo viewer</div>
+                <PhotoViewer className="bg-gray-400 p-3 w-full sm:w-1/2 mx-auto" />
                 <PhotoThumbnails className="w-full md:w-1/2 md:max-h-3/4-screen overflow-y-scroll border border-gray-400" count="5" />
             </div>
 
