@@ -2,24 +2,35 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 class PhotoThumbnails extends React.Component {
+    static defaultProps = {
+        count: 10
+    }
+
     componentDidMount() {
-        fetch('https://picsum.photos/v2/list')
+        const limit = this.props.count;
+        fetch(`https://picsum.photos/v2/list?limit=${limit}`)
             .then(response => response.json())
             .then(photos => this.props.updatePhotos(photos))
         ;
     }
 
-    createThumbs(count = 10) {
-        count = Number(count);
-        // TODO add click event to update state of focused image (by specifying index?)
-        return this.props.photos.map((photo) =>
-            <img
-                key={`key-${photo.id}`}
-                src={`https://picsum.photos/id/${photo.id}/100/100`}
-                alt=""
-                className="m-2 inline-block photoThumbnails__thumbnail cursor-pointer"
-            />
-        );
+    createThumbs() {
+        const scaleClasses = 'transform transition-all duration-300 hover:scale-105';
+        return this.props.photos.map(photo => {
+            const borderClasses = ([
+                'border-4',
+                this.props.focusedPhoto === photo.id ? 'border-orange-500' : 'border-transparent'
+            ]).join(' ');
+            return (
+                <img
+                    key={`key-${photo.id}`}
+                    src={`https://picsum.photos/id/${photo.id}/100/100`}
+                    alt=""
+                    className={`photoThumbnails__thumbnail m-1 inline-block cursor-pointer ${scaleClasses} ${borderClasses}`}
+                    onClick={() => this.props.focusPhoto(photo.id)}
+                />
+            );
+        });
     }
 
     render() {
@@ -29,18 +40,18 @@ class PhotoThumbnails extends React.Component {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        photos: state.photos,
-    };
-};
+const mapStateToProps = state => ({
+    photos: state.photos,
+    focusedPhoto: state.focusedPhoto,
+});
 
-const mapDispatchToProps = dispatch => {
-    return {
-        updatePhotos: photos => {
-            dispatch({ type: 'UPDATE_PHOTOS', photos })
-        },
-    };
-};
+const mapDispatchToProps = dispatch => ({
+    updatePhotos: photos => {
+        dispatch({ type: 'UPDATE_PHOTOS', photos });
+    },
+    focusPhoto: photoID => {
+        dispatch({ type: 'FOCUS_PHOTO', photoID });
+    },
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(PhotoThumbnails);
