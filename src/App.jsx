@@ -4,7 +4,7 @@ import PhotoViewer from './PhotoViewer';
 
 function App() {
     return (
-        <div className="app mx-auto w-full max-w-screen-md text-indigo-900">
+        <div className="app mx-auto w-full text-indigo-900 pb-8 px-8">
             <header className="text-center app__header">
                 <h1 className="text-2xl text-orange-500">
                     RandoPhoto Gallery
@@ -15,10 +15,13 @@ function App() {
             </header>
 
             <main className="flex flex-wrap mt-4">
-                {/* TODO make thumbnails bigger/cards w/ more info */}
-                {/* TODO make viewer an overlay viewer with larger/full image (& still some credits? small footer?) */}
-                <PhotoViewer className="p-3 w-full sm:w-1/2 mx-auto" />
-                <PhotoThumbnails className="w-full md:w-1/2 md:max-h-3/4-screen overflow-y-auto" count="5" />
+                <PhotoViewer />
+                <PhotoThumbnails
+                    className="w-full"
+                    count="2"
+                />
+                {/* TODO adjust count again & make random */}
+                {/* TODO add pagination */}
             </main>
 
             <footer className="text-center fixed bottom-0 w-full bg-gray-300 left-0 bottom-0 border-t border-gray-500 py-1">
