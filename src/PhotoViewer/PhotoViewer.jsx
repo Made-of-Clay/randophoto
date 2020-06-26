@@ -1,21 +1,56 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import PhotoLoader from '../PhotoLoader';
+
+const makeGolden = num => Math.floor(num * 1.618);
+const to75Percent = num => Math.floor(num * 0.75);
+const baseElemClass = 'photoViewer';
 
 class PhotoViewer extends React.Component {
     static defaultProps = {
         className: ''
     }
 
-    get imgWidth() {
-        return 500; // this will be dynamic eventually based on screensize/viewer size
-    }
-    get imgHeight() {
-        if (!this.focusedPhoto) return 0;
-        const {height, width} = this.focusedPhoto;
-        return Math.floor((this.imgWidth * height) / width);
+    get imgDimensions() {
+        const { innerWidth, innerHeight } = window;
+        const isLandscape = innerWidth > innerHeight;
+        let height, width;
+        if (isLandscape) {
+            height = to75Percent(window.innerHeight);
+            width = makeGolden(height);
+        } else {
+            width = to75Percent(window.innerWidth);
+            height = makeGolden(width);
+        }
+
+        return { height, width };
     }
     get focusedPhoto() { // fast enough it doesn't matter that this re-runs
         return this.props.photos.find(photo => photo.id === this.props.focusedPhoto);
+    }
+    get unsplashIcon() {
+        return (
+            <svg
+                viewBox="0 0 32 32"
+                width="32"
+                height="32"
+                fill="white"
+                transform="scale(0.4)"
+                className="inline-block -mr-2"
+            >
+                <title id="unsplash-home">Unsplash Home</title>
+                <path d="M10 9V0h12v9H10zm12 5h10v18H0V14h10v9h12v-9z"></path>
+            </svg>
+        );
+    }
+
+    hideOverlay(event) {
+        if (event
+            && event.target
+            && event.target.classList instanceof DOMTokenList
+            && event.target.classList.contains(baseElemClass)) {
+            this.props.focusPhoto({ photoID: null });
+        }
     }
 
     /*
@@ -26,22 +61,52 @@ class PhotoViewer extends React.Component {
     msg could not be successfully produced due to weirdness of rerender loops (img.onLoad setting state triggers src change)
     */
     render() {
-        let photo;
+        let photo, author, url;
         if (this.focusedPhoto) {
-            const {author, id} = this.focusedPhoto;
-            const imgSrc = `https://picsum.photos/id/${this.focusedPhoto.id}/${this.imgWidth}/${this.imgHeight}`;
-            photo = <img
-                src={imgSrc}
-                alt={`ID ${id} by ${author}`}
-            />;
+            author = this.focusedPhoto.author;
+            url = this.focusedPhoto.url;
+            const { id } = this.focusedPhoto;
+            const { width, height } = this.imgDimensions;
+            const imgSrc = `https://picsum.photos/id/${id}/${width}/${height}`;
+            const imgStyles = {
+                // https://bit.ly/enYi6l
+                // backgroundImage: 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAGUlEQVQYV2NkYGD4z8DAwMiABFA4MHEKBQFmoAEGlW1mUAAAAABJRU5ErkJggg==)',
+                height,
+                width,
+            };
+            photo = (
+                <img
+                   src={imgSrc}
+                   alt={`ID ${id} by ${author}`}
+                   className="relative"
+                   style={imgStyles}
+                />
+            );
         } else {
             photo = <span />;
         }
 
+        const display = this.focusedPhoto ? 'fixed' : 'hidden';
+        const classes = [
+            baseElemClass,
+            `${display} left-0 top-0 z-10 w-full h-full`,
+            'bg-black bg-opacity-75', // keep bg-black since opacity only affects opacity, not color too (duh)
+            'flex flex-col items-center justify-center',
+            this.props.className,
+        ];
         return (
-            <div className={`photoViewer relative pb-6 ${this.props.className}`}>
-                {photo}
-            </div>
+            <figure className={classes.join(' ')} onClick={event => this.hideOverlay(event)}>
+                <div className="flex items-center justify-center">
+                    <PhotoLoader className="absolute" />
+                    {photo}
+                </div>
+                <figcaption className="block m-4 text-center">
+                    <div className="text-indigo-200">Photo by {author}</div>
+                    <a href={url} className="text-blue-300">
+                        {this.unsplashIcon} Go to Unsplash
+                    </a>
+                </figcaption>
+            </figure>
         );
     }
 }
@@ -53,4 +118,10 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps)(PhotoViewer);
+const mapDispatchToProps = dispatch => ({
+    focusPhoto: photoID => {
+        dispatch({ type: 'FOCUS_PHOTO', photoID });
+    },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(PhotoViewer);

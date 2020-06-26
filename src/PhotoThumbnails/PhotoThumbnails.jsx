@@ -1,6 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+const thumbY = 200;
+const thumbX = Math.floor(thumbY * 1.618);
+
 class PhotoThumbnails extends React.Component {
     static defaultProps = {
         count: 10
@@ -14,29 +17,42 @@ class PhotoThumbnails extends React.Component {
         ;
     }
 
-    createThumbs() {
+    createThumbs(thumbFunc) {
         const scaleClasses = 'transform transition-all duration-300 hover:scale-105';
         return this.props.photos.map(photo => {
+            const photoSelected = this.props.focusedPhoto === photo.id;
             const borderClasses = ([
                 'border-4',
-                this.props.focusedPhoto === photo.id ? 'border-orange-500' : 'border-transparent'
+                photoSelected ? 'border-orange-500' : 'border-transparent'
             ]).join(' ');
-            return (
-                <img
-                    key={`key-${photo.id}`}
-                    src={`https://picsum.photos/id/${photo.id}/100/100`}
-                    alt=""
-                    className={`photoThumbnails__thumbnail m-1 inline-block cursor-pointer ${scaleClasses} ${borderClasses}`}
-                    onClick={() => this.props.focusPhoto(photo.id)}
-                />
-            );
+            const bgClasses = photoSelected ? 'bg-orange-400' : 'bg-gray-200';
+            const imgSrc = `https://picsum.photos/id/${photo.id}/${thumbX}/${thumbY}`;
+            const classes = `rounded-lg shadow-md p-1 m-2 cursor-pointer ${scaleClasses} ${borderClasses} ${bgClasses}`;
+            return thumbFunc(photo, { imgSrc, classes });
         });
     }
 
     render() {
-        return <div className={`photoThumbnails ${this.props.className}`}>
-            {this.createThumbs(this.props.count)}
-        </div>;
+        return (
+            <div className={`photoThumbnails flex flex-wrap ${this.props.className}`}>
+                {this.createThumbs((photo, { imgSrc, classes }) => (
+                    <figure
+                        key={`key-${photo.id}`}
+                        className={classes}
+                        onClick={() => this.props.focusPhoto(photo.id)}
+                    >
+                        <img
+                            src={imgSrc}
+                            alt=""
+                            className="rounded-lg"
+                        />
+                        <figcaption className="text-center">
+                            Photographer: {photo.author}
+                        </figcaption>
+                    </figure>
+                ))}
+            </div>
+        );
     }
 }
 
